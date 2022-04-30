@@ -99,7 +99,7 @@ class OptionsMenu(Menu):
         Menu.__init__(self, game)
         self.state = 'Volume'
         self.volx, self.voly = self.mid_w, self.mid_h + 20
-        self.controlsx, self.controlsy = self.mid_w, self.mid_h + 40
+        self.controlsx, self.controlsy = self.mid_w, self.mid_h + 60
         self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
 
     def display_menu(self):
@@ -123,9 +123,11 @@ class OptionsMenu(Menu):
             if self.state == 'Volume':
                 self.state = 'Controls'
                 self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy)
+                self.VoiceOver.read(self.state)
             elif self.state == 'Controls':
                 self.state = 'Volume'
                 self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+                self.VoiceOver.read(self.state)
         elif self.game.START_KEY:
             # TO-DO: Create a Volume Menu and a Controls Menu
             pass
