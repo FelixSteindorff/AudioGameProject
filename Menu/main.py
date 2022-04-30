@@ -1,5 +1,6 @@
 from game import Game
-import accessible_output2.outputs.auto
+
+
 
 g = Game()
 

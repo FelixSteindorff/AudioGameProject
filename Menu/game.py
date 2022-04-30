@@ -1,13 +1,16 @@
 import pygame
-from menu import *
+from menu import MainMenu,CreditsMenu,OptionsMenu
 
 
 class Game():
+    
+
     def __init__(self):
         pygame.init()
+        self.clock = pygame.time.Clock()
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
-        self.DISPLAY_W, self.DISPLAY_H = 480, 270
+        self.DISPLAY_W, self.DISPLAY_H = 800, 600
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
         self.font_name = pygame.font.get_default_font()
@@ -16,6 +19,7 @@ class Game():
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
         self.curr_menu = self.main_menu
+        
 
     def game_loop(self):
         while self.playing:
@@ -25,7 +29,7 @@ class Game():
             self.display.fill(self.BLACK)
             self.draw_text('Thanks for Playing', 20, self.DISPLAY_W/2, self.DISPLAY_H/2)
             self.window.blit(self.display, (0,0))
-            pygame.display.update()
+            
             self.reset_keys()
 
 
@@ -44,6 +48,7 @@ class Game():
                     self.DOWN_KEY = True
                 if event.key == pygame.K_UP:
                     self.UP_KEY = True
+        
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
@@ -54,6 +59,7 @@ class Game():
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
+        pygame.display.flip()
 
 
 

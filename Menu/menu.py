@@ -1,16 +1,29 @@
 import pygame
 import accessible_output2.outputs.auto
 
+
+
+class VoiceOver():
+    def __init__(self):
+        self.voice = accessible_output2.outputs.auto.Auto()
+        
+    
+    def read(self, text):
+        self.voice.speak(text,interrupt= True)
+
 class Menu():
     def __init__(self, game):
         self.game = game
+        self.VoiceOver = VoiceOver()
         self.mid_w, self.mid_h = self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2
         self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 20, 20)
         self.offset = - 100
+       
 
     def draw_cursor(self):
-        self.game.draw_text('*', 15, self.cursor_rect.x, self.cursor_rect.y)
+        self.game.draw_text('*', 25, self.cursor_rect.x, self.cursor_rect.y)
+        pygame.display.flip()
 
     def blit_screen(self):
         self.game.window.blit(self.game.display, (0, 0))
@@ -21,9 +34,9 @@ class MainMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
         self.state = "Start"
-        self.startx, self.starty = self.mid_w, self.mid_h + 30
-        self.optionsx, self.optionsy = self.mid_w, self.mid_h + 50
-        self.creditsx, self.creditsy = self.mid_w, self.mid_h + 70
+        self.startx, self.starty = self.mid_w, self.mid_h + 90
+        self.optionsx, self.optionsy = self.mid_w, self.mid_h + 120
+        self.creditsx, self.creditsy = self.mid_w, self.mid_h + 200
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
 
     def display_menu(self):
@@ -32,20 +45,20 @@ class MainMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Main Menu', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
-            self.game.draw_text("Start Game", 20, self.startx, self.starty)
-            self.game.draw_text("Options", 20, self.optionsx, self.optionsy)
-            self.game.draw_text("Credits", 20, self.creditsx, self.creditsy)
+            self.game.draw_text('Main Menu', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
+            self.game.draw_text("Start Game", 30, self.startx, self.starty)
+            self.game.draw_text("Options", 30, self.optionsx, self.optionsy)
+            self.game.draw_text("Credits", 30, self.creditsx, self.creditsy)
             self.draw_cursor()
             self.blit_screen()
+            pygame.display.flip()
+            
 
 
     def move_cursor(self):
         
         if self.game.DOWN_KEY:
-            #output
-            self.o = accessible_output2.outputs.auto.Auto()
-
+            
             if self.state == 'Start':
                 self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy)
                 self.state = 'Options'
@@ -55,9 +68,8 @@ class MainMenu(Menu):
             elif self.state == 'Credits':
                 self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
                 self.state = 'Start'
-            self.o.speak(self.state)
+            self.VoiceOver.read(self.state)
         elif self.game.UP_KEY:
-            self.o = accessible_output2.outputs.auto.Auto()
             if self.state == 'Start':
                 self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy)
                 self.state = 'Credits'
@@ -67,7 +79,8 @@ class MainMenu(Menu):
             elif self.state == 'Credits':
                 self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy)
                 self.state = 'Options'
-            self.o.speak(self.state)
+            self.VoiceOver.read(self.state)
+        pygame.display.flip()
         
 
     def check_input(self):
@@ -95,11 +108,12 @@ class OptionsMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill((0, 0, 0))
-            self.game.draw_text('Options', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 30)
-            self.game.draw_text("Volume", 15, self.volx, self.voly)
-            self.game.draw_text("Controls", 15, self.controlsx, self.controlsy)
+            self.game.draw_text('Options', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 30)
+            self.game.draw_text("Volume", 30, self.volx, self.voly)
+            self.game.draw_text("Controls", 30, self.controlsx, self.controlsy)
             self.draw_cursor()
             self.blit_screen()
+            
 
     def check_input(self):
         if self.game.BACK_KEY:
@@ -128,6 +142,6 @@ class CreditsMenu(Menu):
                 self.game.curr_menu = self.game.main_menu
                 self.run_display = False
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Credits', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
-            self.game.draw_text('Made by me', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 10)
+            self.game.draw_text('Credits', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
+            self.game.draw_text('Made by Felix Steindorf and Bastian Brück', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 10)
             self.blit_screen()
