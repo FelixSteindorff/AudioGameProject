@@ -1,5 +1,6 @@
 import pygame
 import accessible_output2.outputs.auto
+from sounds import Soundloader
 
 
 
@@ -9,11 +10,13 @@ class VoiceOver():
         
     
     def read(self, text):
-        self.voice.speak(text,interrupt= True)
-
+        self.voice.speak(text)
+        self.voice.braille(text)
+        
 class Menu():
     def __init__(self, game):
         self.game = game
+        self.soundloader = Soundloader()
         self.VoiceOver = VoiceOver()
         self.mid_w, self.mid_h = self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2
         self.run_display = True
@@ -87,10 +90,13 @@ class MainMenu(Menu):
         self.move_cursor()
         if self.game.START_KEY:
             if self.state == 'Start':
+                self.soundloader.loadSound('sounds/click.wav')
                 self.game.playing = True
             elif self.state == 'Options':
+                self.soundloader.loadSound('sounds/click.wav')
                 self.game.curr_menu = self.game.options
             elif self.state == 'Credits':
+                self.soundloader.loadSound('sounds/click.wav')
                 self.game.curr_menu = self.game.credits
             self.run_display = False
 
@@ -116,7 +122,10 @@ class OptionsMenu(Menu):
             
 
     def check_input(self):
+        if self.game.START_KEY:
+            self.soundloader.loadSound('sounds/click.wav')
         if self.game.BACK_KEY:
+            self.soundloader.loadSound('sounds/click_rev.wav')
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
         elif self.game.UP_KEY or self.game.DOWN_KEY:
@@ -129,8 +138,11 @@ class OptionsMenu(Menu):
                 self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
                 self.VoiceOver.read(self.state)
         elif self.game.START_KEY:
-            # TO-DO: Create a Volume Menu and a Controls Menu
-            pass
+            if self.state == 'Volume':
+                self.game.curr_menu = self.game.volume
+            self.run_display = False
+                
+
 
 class CreditsMenu(Menu):
     def __init__(self, game):
@@ -142,8 +154,43 @@ class CreditsMenu(Menu):
             self.game.check_events()
             if self.game.START_KEY or self.game.BACK_KEY:
                 self.game.curr_menu = self.game.main_menu
+                self.soundloader.loadSound('sounds/click_rev.wav')
                 self.run_display = False
             self.game.display.fill(self.game.BLACK)
             self.game.draw_text('Credits', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
             self.game.draw_text('Made by Felix Steindorf and Bastian Brück', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 10)
             self.blit_screen()
+
+class VolumeMenu(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.state = 'Game Volume'
+        self.volx, self.voly = self.mid_w, self.mid_h + 20
+        self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+
+    def check_input(self):
+        if self.game.BACK_KEY:
+            self.soundloader.loadSound('sounds/click_rev.wav')
+            self.game.curr_menu = self.game.options
+            self.run_display = False
+        elif self.game.START_KEY:
+            if self.state == 'Game Volume':
+                self.soundloader.loadSound('sounds/click.wav')
+                if self.game.START_KEY:
+                    self.state = 'adjust Volume'
+            self.run_display = False
+    
+    def display_menu(self):
+        self.run_display = True
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+            self.game.display.fill((0, 0, 0))
+            self.game.draw_text('Volume Settings', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 30)
+            self.game.draw_text("Game Volume", 30, self.volx, self.voly)
+            self.draw_cursor()
+            self.blit_screen()
+
+
+
+   
