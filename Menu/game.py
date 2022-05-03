@@ -64,12 +64,6 @@ class Game():
         pygame.display.flip()
 
 
+  
     
-    
-    
-    
-    
-
-
-
 
