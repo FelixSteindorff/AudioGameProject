@@ -5,6 +5,9 @@ from pygame.locals import *
 
 class Soundloader():  
     pygame.mixer.init()
+    pygame.init()
+   
+    
     forward = pygame.mixer.Sound("sounds/click.wav")
     backward = pygame.mixer.Sound("sounds/click_rev.wav")
 
@@ -16,3 +19,6 @@ class Soundloader():
     def backwardSound(self):
         backwardCh = self.backward.play()
         return backwardCh
+
+   
+   
