@@ -1,8 +1,6 @@
 
 import pygame
 import accessible_output2.outputs.auto
-
-
 from sounds import Soundloader
 from pygame import mixer 
  
@@ -14,7 +12,7 @@ class VoiceOver():
     
     def read(self, text):
         if self.VoiceEnabled == True:
-            self.voice.speak(text)
+            self.voice.speak(text, interrupt= True)
             self.voice.braille(text)
         
 class Menu():
@@ -204,7 +202,8 @@ class VolumeMenu(Menu):
             if(self.slider > 0):
                 self.state = 'Minus'
                 self.slider -= 10
-                self.soundloader.forward.set_volume(self.slider/100)
+                for sounds in self.soundloader.menuSounds:
+                    sounds.set_volume(self.slider/100)
                 self.VolSlide = pygame.Rect(self.slidx - 50, self.slidy, self.slider, 15)
                 self.VoiceOver.read(str(self.slider))
             else:
@@ -214,16 +213,14 @@ class VolumeMenu(Menu):
             if(self.slider < 100):
                 self.state = 'Plus'
                 self.slider += 10
-                self.soundloader.forward.set_volume(self.slider/100)
+                #self.soundloader.forward.set_volume(self.slider/100)
+                for sounds in self.soundloader.menuSounds:
+                    sounds.set_volume(self.slider/100)
                 self.VolSlide = pygame.Rect(self.slidx - 50, self.slidy, self.slider, 15)
                 self.VoiceOver.read(str(self.slider))
                 print(self.soundloader.forward.get_volume())
             else:
-                self.slider = 100
-        
-            
-
-                
+                self.slider = 100  
        
 
     def display_menu(self):
