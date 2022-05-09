@@ -3,15 +3,17 @@ import pygame
 import accessible_output2.outputs.auto
 from sounds import Soundloader
 from pygame import mixer 
- 
+global VoiceEnabled 
+VoiceEnabled = True
+
 class VoiceOver():
     def __init__(self):
-        self.VoiceEnabled = True
+        
         self.voice = accessible_output2.outputs.auto.Auto()
 
     
     def read(self, text):
-        if self.VoiceEnabled == True:
+        if VoiceEnabled == True:
             self.voice.speak(text, interrupt= True)
             self.voice.braille(text)
         else:
@@ -174,43 +176,44 @@ class CreditsMenu(Menu):
 class VolumeMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = 'Game Volume'
-        self.volx, self.voly = self.mid_w, self.mid_h + 20
-        self.disableVoicex,self.disableVoicey = self.mid_w, self.mid_h + 50
-        self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+        self.state = 'Menu Sound'
+        self.disableVoicex,self.disableVoicey = self.mid_w, self.mid_h + 70
         self.soundloader = Soundloader()
         self.slidx, self.slidy= self.mid_w, self.mid_h + 20
+        self.cursor_rect.midtop = (self.slidx + self.offset, self.slidy)
         self.slider = 1*100
         self.VolSlide = pygame.Rect(self.slidx - 50, self.slidy, self.slider, 15)
 
     def check_input(self):
+        global VoiceEnabled 
         self.move_cursor()
         if self.game.BACK_KEY:
             self.soundloader.backwardSound()
             self.game.curr_menu = self.game.options
             self.run_display = False
-        elif self.game.START_KEY:
-            self.soundloader.forwardSound()
         elif self.game.UP_KEY or self.game.DOWN_KEY:
-            if self.state == 'Volume':
-                self.state = 'Controls'
-                
-                    #num = float(input("Get Vol"))
-                    #self.soundloader.forward.set_volume(num)
-                    #self.soundloader.backward.set_volume(num)
-            self.run_display = False
+            if self.state == 'Menu Sound':
+                self.state = 'Disable Voice'
+                self.cursor_rect.midtop = (self.disableVoicex + self.offset, self.disableVoicey)
+                self.VoiceOver.read(self.state)
+            elif self.state == 'Disable Voice':
+                self.state = 'Menu Sound'
+                self.cursor_rect.midtop = (self.slidx + self.offset, self.slidy)
+                self.VoiceOver.read(self.state)
+            self.soundloader.forwardSound()
+        elif self.state == 'Disable Voice' and self.game.START_KEY :
+            if VoiceEnabled == True:
+                self.VoiceOver.read('VoiceOver disabled')
+                VoiceEnabled = False
+            elif VoiceEnabled == False:
+                VoiceEnabled = True
+                self.VoiceOver.read('VoiceOver enabled')
+        
+        self.run_display = False
 
     def move_cursor(self):
-        if self.game.START_KEY:
-            self.state == 'VolumeSlider'
-            self.cursor_rect.midtop = (self.slidx + self.offset, self.slidy)
-            self.VoiceOver.read("Menu Sound")
-        if self.game.UP_KEY or self.game.DOWN_KEY:
-            self.state = 'VoiseDisable'
-            self.cursor_rect.midtop= (self.disableVoicex + self.offset, self.disableVoicey)
         if self.game.LEFT_KEY:
             if(self.slider > 0):
-                self.state = 'Minus'
                 self.slider -= 10
                 for sounds in self.soundloader.menuSounds:
                     sounds.set_volume(self.slider/100)
@@ -221,7 +224,6 @@ class VolumeMenu(Menu):
             print(self.soundloader.forward.get_volume())
         if self.game.RIGHT_KEY:
             if(self.slider < 100):
-                self.state = 'Plus'
                 self.slider += 10
                 #self.soundloader.forward.set_volume(self.slider/100)
                 for sounds in self.soundloader.menuSounds:
@@ -231,7 +233,6 @@ class VolumeMenu(Menu):
                 print(self.soundloader.forward.get_volume())
             else:
                 self.slider = 100
-       
 
 
     def display_menu(self):
@@ -242,7 +243,7 @@ class VolumeMenu(Menu):
             self.game.display.fill((0, 0, 0))
             self.game.draw_text('Volume Settings', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 30)
             pygame.draw.rect(self.game.display, (255,255,255), self.VolSlide)
-            #self.game.draw_text("Disable Voice", 30, self.disableVoicex, self.disableVoicey)
+            self.game.draw_text("Disable Voice", 30, self.disableVoicex, self.disableVoicey)
             self.draw_cursor()
             self.blit_screen()
 
