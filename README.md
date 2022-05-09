@@ -7,14 +7,12 @@ A Rock Paper Scissors Audio Game in Python with Pygame and accessible-output2
 To install you can download the Project and execute the main.py File. 
 This is an early build so stuff breaks.
 
-### Prerequisites
+### Requirements
+* **Python 3.9
+* **pip
+* **PyGame
+* **accessible-output2
 
-```
-Python 3.9
-pip
-pygame
-accessible-output2
-```
 
 ### Installing
 
