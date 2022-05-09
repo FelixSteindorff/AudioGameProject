@@ -8,10 +8,10 @@ To install you can download the Project and execute the main.py File.
 This is an early build so stuff breaks.
 
 ### Requirements
-* **Python 3.9
-* **pip
-* **PyGame
-* **accessible-output2
+* Python 3.9
+* pip
+* PyGame
+* accessible-output2
 
 
 ### Installing
