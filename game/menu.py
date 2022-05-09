@@ -2,7 +2,10 @@
 import pygame
 import accessible_output2.outputs.auto
 from sounds import Soundloader
-from pygame import mixer 
+from pygame import mixer
+
+
+#var for Voice Over (must be restructured later...)
 global VoiceEnabled 
 VoiceEnabled = True
 
@@ -28,13 +31,14 @@ class Menu():
         self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 20, 20)
         self.offset = - 100
-        
        
-
+    #draws the cursor to the screen   
     def draw_cursor(self):
-        self.game.draw_text('*', 25, self.cursor_rect.x, self.cursor_rect.y)
+        self.game.display.blit(self.game.cursor_image_resized, (self.cursor_rect.x-30,self.cursor_rect.y-45))
+        #self.game.draw_text('*', 25, self.cursor_rect.x, self.cursor_rect.y)
         pygame.display.flip()
 
+    #function to render the display and reset key inputs
     def blit_screen(self):
         self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
@@ -43,18 +47,22 @@ class Menu():
 class MainMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
+        #Variable to track the current Position in Menu
         self.state = "Start"
+        
+        #Positions of the Menu Items
         self.startx, self.starty = self.mid_w, self.mid_h + 90
         self.optionsx, self.optionsy = self.mid_w, self.mid_h + 120
         self.creditsx, self.creditsy = self.mid_w, self.mid_h + 200
         self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
-
+        
+    #show MainMenu
     def display_menu(self):
         self.run_display = True
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            self.game.display.fill(self.game.BLACK)
+            self.game.display.blit(self.game.menu_image, (0,0))
             self.game.draw_text('Main Menu', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
             self.game.draw_text("Start Game", 30, self.startx, self.starty)
             self.game.draw_text("Options", 30, self.optionsx, self.optionsy)
@@ -64,20 +72,24 @@ class MainMenu(Menu):
             pygame.display.flip()
             
 
-
+    #function to move cursor
     def move_cursor(self):
         
         if self.game.DOWN_KEY:
-            
+            #get current state and update it on self.game.<KEY_PRESSED>
             if self.state == 'Start':
+                #draw cursor to current selected Item
                 self.cursor_rect.midtop = (self.optionsx + self.offset, self.optionsy)
                 self.state = 'Options'
             elif self.state == 'Options':
+                #draw cursor to current selected Item
                 self.cursor_rect.midtop = (self.creditsx + self.offset, self.creditsy)
                 self.state = 'Credits'
             elif self.state == 'Credits':
+                #draw cursor to current selected Item
                 self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
                 self.state = 'Start'
+            #obj VoiceOver to read
             self.VoiceOver.read(self.state)
         elif self.game.UP_KEY:
             if self.state == 'Start':
@@ -92,7 +104,7 @@ class MainMenu(Menu):
             self.VoiceOver.read(self.state)
         pygame.display.flip()
         
-
+    
     def check_input(self):
         self.move_cursor()
         if self.game.START_KEY:
@@ -109,6 +121,7 @@ class MainMenu(Menu):
                 self.game.curr_menu = self.game.credits
             self.run_display = False
 
+#OptionsMenu extends Menu
 class OptionsMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
@@ -117,15 +130,13 @@ class OptionsMenu(Menu):
         self.controlsx, self.controlsy = self.mid_w, self.mid_h + 60
         self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
 
-    def draw_test(self):
-        self.game.draw_text('*', 25, self.cursor_rect.x, self.cursor_rect.y)
 
     def display_menu(self):
         self.run_display = True
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            self.game.display.fill((0, 0, 0))
+            self.game.display.blit(self.game.menu_image, (0,0))
             self.game.draw_text('Options', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 30)
             self.game.draw_text("Volume", 30, self.volx, self.voly)
             self.game.draw_text("Controls", 30, self.controlsx, self.controlsy)
@@ -168,7 +179,7 @@ class CreditsMenu(Menu):
                 self.game.curr_menu = self.game.main_menu
                 self.soundloader.forwardSound()
                 self.run_display = False
-            self.game.display.fill(self.game.BLACK)
+            self.game.display.blit(self.game.menu_image, (0,0))
             self.game.draw_text('Credits', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
             self.game.draw_text('Made by Felix Steindorf and Bastian Brück', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 10)
             self.blit_screen()
@@ -177,14 +188,20 @@ class VolumeMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
         self.state = 'Menu Sound'
+        #Position of Voice enable/disable Item
         self.disableVoicex,self.disableVoicey = self.mid_w, self.mid_h + 70
+        #obj to import Sound Assets 
         self.soundloader = Soundloader()
+        #slider position
         self.slidx, self.slidy= self.mid_w, self.mid_h + 20
         self.cursor_rect.midtop = (self.slidx + self.offset, self.slidy)
+        #Variable to show current slider value *100 bec sound is measured from 0 - 1...
         self.slider = 1*100
+        #Slider Object (draws rectange) 
         self.VolSlide = pygame.Rect(self.slidx - 50, self.slidy, self.slider, 15)
 
     def check_input(self):
+        #checks if VoiceOver is enabled
         global VoiceEnabled 
         self.move_cursor()
         if self.game.BACK_KEY:
@@ -194,7 +211,7 @@ class VolumeMenu(Menu):
         elif self.game.UP_KEY or self.game.DOWN_KEY:
             if self.state == 'Menu Sound':
                 self.state = 'Disable Voice'
-                self.cursor_rect.midtop = (self.disableVoicex + self.offset, self.disableVoicey)
+                self.cursor_rect.midtop = (self.disableVoicex-50 + self.offset, self.disableVoicey)
                 self.VoiceOver.read(self.state)
             elif self.state == 'Disable Voice':
                 self.state = 'Menu Sound'
@@ -202,6 +219,7 @@ class VolumeMenu(Menu):
                 self.VoiceOver.read(self.state)
             self.soundloader.forwardSound()
         elif self.state == 'Disable Voice' and self.game.START_KEY :
+            #Statement to enable and disable Voice Over
             if VoiceEnabled == True:
                 self.VoiceOver.read('VoiceOver disabled')
                 VoiceEnabled = False
@@ -213,6 +231,7 @@ class VolumeMenu(Menu):
 
     def move_cursor(self):
         if self.game.LEFT_KEY:
+            #Statement to decrease menuSounds volume and Slider var(to visualize current volume)
             if(self.slider > 0):
                 self.slider -= 10
                 for sounds in self.soundloader.menuSounds:
@@ -223,6 +242,7 @@ class VolumeMenu(Menu):
                 self.slider = 0
             print(self.soundloader.forward.get_volume())
         if self.game.RIGHT_KEY:
+            #Statement to increase menuSounds volume and Slider var(to visualize current volume)
             if(self.slider < 100):
                 self.slider += 10
                 #self.soundloader.forward.set_volume(self.slider/100)
@@ -240,8 +260,9 @@ class VolumeMenu(Menu):
         while self.run_display:
             self.game.check_events()
             self.check_input()
-            self.game.display.fill((0, 0, 0))
+            self.game.display.blit(self.game.menu_image, (0,0))
             self.game.draw_text('Volume Settings', 30, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 30)
+            #draw Volume Slider
             pygame.draw.rect(self.game.display, (255,255,255), self.VolSlide)
             self.game.draw_text("Disable Voice", 30, self.disableVoicex, self.disableVoicey)
             self.draw_cursor()

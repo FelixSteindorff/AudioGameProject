@@ -6,14 +6,29 @@ import random
 class Game():
     def __init__(self):
         pygame.init()
+        
+        #Load Menu Assets
+        self.menu_image = pygame.image.load('graphics/menuAssets/MenuBackground.jpg')
+        self.cursor_image = pygame.image.load('graphics/menuAssets/cursor1.png')
+        self.cursor_image_resized = pygame.transform.scale(self.cursor_image, (50,80))
+        self.cursor_image_resized.set_colorkey(None)
+        
+        
         self.clock = pygame.time.Clock()
+        
         self.running, self.playing = True, False
+        
+        #bools for Key Pressed
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False,False,False,False
+        
         self.DISPLAY_W, self.DISPLAY_H = 800, 600
+        
         self.display = pygame.Surface((self.DISPLAY_W,self.DISPLAY_H))
         self.window = pygame.display.set_mode(((self.DISPLAY_W,self.DISPLAY_H)))
         self.font_name = pygame.font.get_default_font()
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
+        
+        #init Menus on start
         self.main_menu = MainMenu(self)
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
@@ -27,7 +42,7 @@ class Game():
             self.check_events()
             if self.START_KEY:
                 self.playing= False
-            self.display.fill(self.BLACK)
+            self.game.window.blit(self.image, (0,0))
             #self.draw_text('Thanks for Playing', 20, self.DISPLAY_W/2, self.DISPLAY_H/2)
             self.window.blit(self.display, (0,0))
             
@@ -60,11 +75,14 @@ class Game():
 
     def draw_text(self, text, size, x, y):
         font = pygame.font.Font(self.font_name,size)
-        text_surface = font.render(text, True, self.WHITE)
+        text_surface = font.render(text, True, self.BLACK)
         text_rect = text_surface.get_rect()
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
         pygame.display.flip()
+
+
+
 
     
 

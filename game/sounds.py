@@ -13,10 +13,12 @@ class Soundloader():
     backward = pygame.mixer.Sound("sounds/click_rev.wav")
     menuSounds = [forward, backward]
 
+    #play forward sound to advance in Menu
     def forwardSound(self):
         forwardCh = self.forward.play()
         return forwardCh
 
+    #play backward sound to go to previous menu
     def backwardSound(self):
         backwardCh = self.backward.play()
         return backwardCh
