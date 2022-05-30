@@ -1,3 +1,4 @@
+from numpy import False_
 import pygame
 from menu import MainMenu,CreditsMenu,OptionsMenu, VolumeMenu,VoiceOver
 import random
@@ -48,7 +49,6 @@ class Game():
             self.RockPaperScissors.display_game()
             #self.draw_text('Thanks for Playing', 20, self.DISPLAY_W/2, self.DISPLAY_H/2)
             self.window.blit(self.display, (0,0))
-            
             self.reset_keys()
 
     
@@ -94,12 +94,16 @@ class RockPaperScissors():
     def __init__(self, game):
         self.game = game
         self.score = 0
-        self.state = "Rock"
+        self.game_running = True
         self.player_side_w, self.mid_h = self.game.DISPLAY_W / 2.5, self.game.DISPLAY_H / 2
         self.player_rock_x,self.player_rock_y =  self.player_side_w -50, self.mid_h
         self.player_scrissors_x,self.player_scrissors_y =  self.player_side_w -50, self.mid_h+40
         self.player_paper_x,self.player_paper_y =  self.player_side_w -50, self.mid_h+80
+        self.score_x, self.score_y = self.player_side_w-250, self.mid_h-280
         self.choices = {"Rock","Scissors", "Paper"}
+        self.computer_choice = self.getComputerChoice()
+        self.player_choice = self.getPlayerChoice
+
 
     #function to render the display and reset key inputs
     def blit_screen(self):
@@ -111,11 +115,12 @@ class RockPaperScissors():
     def display_game(self):
         while self.game.playing == True:
             self.game.check_events()
-            self.gameLogic()
-            self.game.display.fill((255,255,255))
+            self.game.display.fill((220,220,220))
             self.game.draw_text("Rock", 30, self.player_rock_x, self.player_rock_y)
             self.game.draw_text("Scissors", 30, self.player_scrissors_x, self.player_scrissors_y)
             self.game.draw_text("Paper", 30, self.player_paper_x, self.player_paper_y)
+            self.game.draw_text(f'Score: {str(self.score)}', 30, self.score_x, self.score_y)
+            self.gameLogic()
             self.blit_screen()
             pygame.display.flip()
 
@@ -128,19 +133,6 @@ class RockPaperScissors():
         elif self.game.P_KEY:
             return "Paper"
         
-
-
-    
-    #def getResult(self,result):
-      #  if result == 'win':
-            self.win+=1
-      #  elif result == 'lose':
-            self.lose+=1
-      #  elif result == 'tie':
-     #       self.tie +=1
-        
-    #    return result 
-
     def getPlayerChoice(self):
         return self.check_input()
         
@@ -151,33 +143,39 @@ class RockPaperScissors():
 
 
     def gameRules(self, computer_choice, player_choice):
-        if self.player_choice != None:
-            if self.computer_choice == self.player_choice:
+        print(self.score)
+        if player_choice != None:
+            if computer_choice == player_choice:
                 self.result = 'tie'
-                print(f'tie  Computer:{self.computer_choice} : You {self.player_choice}')
-
-            elif self.computer_choice == 'Scissors' and self.player_choice == 'ROCK':
+                print(f'tie  Computer:{computer_choice} : You {player_choice}')
+            elif computer_choice == 'Scissors' and player_choice == 'Rock':
                 self.result = 'win'
-                print(f'ROCK crushes SCISSORS! You win!Computer:{self.computer_choice} : You {self.player_choice}')
-            elif self.computer_choice == 'Paper' and self.player_choice == 'Scissors': 
+                print(f'ROCK crushes SCISSORS! You win!Computer:{computer_choice} : You {player_choice}')
+                self.score +=1
+            elif computer_choice == 'Paper' and player_choice == 'Scissors': 
                 self.result = 'win'
-                print(f'SCISSORS cut PAPER! You win!Computer:{self.computer_choice} : You {self.player_choice}')
-            elif self.computer_choice == 'ROCK' and self.player_choice == 'PAPER': 
+                self.score +=1
+                print(f'SCISSORS cut PAPER! You win!Computer:{computer_choice} : You {player_choice}')
+            elif computer_choice == 'Rock' and player_choice == 'Paper': 
                 self.result = 'win'
-                print(f'PAPER covers Rock! You win! Computer:{self.computer_choice} : You {self.player_choice}')
-
+                print(f'PAPER covers Rock! You win! Computer:{computer_choice} : You {player_choice}')
+                self.score +=1
             else: 
                 self.result = 'lose'
-                print(f'You lose! Computer:{self.computer_choice} : You {self.player_choice}')
+                print(f'You lose! Computer:{computer_choice} : You {player_choice}')
+                self.score -=1
+            self.game_running = False
+            print(self.score)
         return self.result
 
     def gameLogic(self):
         self.computer_choice = self.getComputerChoice() 
         self.player_choice = self.getPlayerChoice()
         
-        self.result = self.gameRules(self.player_choice, self.computer_choice)
-        print(self.result)
-        #print(f'Wins: {self.win}, Loses:{self.lose}, Draw:{self.tie}')
+        if self.player_choice:
+            self.gameRules(self.computer_choice, self.player_choice)
+
+
 
 
 
