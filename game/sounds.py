@@ -1,4 +1,3 @@
-from turtle import back
 import pygame
 from pygame.locals import *
 
@@ -11,7 +10,22 @@ class Soundloader():
     
     forward = pygame.mixer.Sound("sounds/click.wav")
     backward = pygame.mixer.Sound("sounds/click_rev.wav")
+    
+    score_Up = pygame.mixer.Sound("sounds/ScoreUP.wav")
+    score_Down = pygame.mixer.Sound("sounds/ScoreDown.wav")
+    score_Up.set_volume(0.3)
+
     menuSounds = [forward, backward]
+
+
+    def scoreDownSound(self):
+        score_Down_Ch = self.score_Down.play()
+        return score_Down_Ch 
+
+    def scoreUpSound(self):
+        score_Up_Ch = self.score_Up.play()
+        return score_Up_Ch, 
+
 
     #play forward sound to advance in Menu
     def forwardSound(self):

@@ -1,5 +1,6 @@
 from numpy import False_
 import pygame
+from sounds import Soundloader
 from menu import MainMenu,CreditsMenu,OptionsMenu, VolumeMenu,VoiceOver
 import random
 
@@ -90,10 +91,12 @@ class Game():
         pygame.display.flip()
 
 class RockPaperScissors():
-    
+    from sounds import Soundloader
+
     def __init__(self, game):
         self.game = game
         self.score = 0
+        self.score_sounds = Soundloader()
         self.game_running = True
         self.player_side_w, self.mid_h = self.game.DISPLAY_W / 2.5, self.game.DISPLAY_H / 2
         self.player_rock_x,self.player_rock_y =  self.player_side_w -50, self.mid_h
@@ -143,37 +146,42 @@ class RockPaperScissors():
 
 
     def gameRules(self, computer_choice, player_choice):
-        print(self.score)
+        result = ''
         if player_choice != None:
             if computer_choice == player_choice:
-                self.result = 'tie'
+                result = 'tie'
                 print(f'tie  Computer:{computer_choice} : You {player_choice}')
             elif computer_choice == 'Scissors' and player_choice == 'Rock':
-                self.result = 'win'
+                result = 'win'
                 print(f'ROCK crushes SCISSORS! You win!Computer:{computer_choice} : You {player_choice}')
-                self.score +=1
             elif computer_choice == 'Paper' and player_choice == 'Scissors': 
-                self.result = 'win'
-                self.score +=1
+                result = 'win'
                 print(f'SCISSORS cut PAPER! You win!Computer:{computer_choice} : You {player_choice}')
             elif computer_choice == 'Rock' and player_choice == 'Paper': 
-                self.result = 'win'
-                print(f'PAPER covers Rock! You win! Computer:{computer_choice} : You {player_choice}')
-                self.score +=1
+                result = 'win'
+                print(f'PAPER covers Rock! You win! Computer:{computer_choice} : You {player_choice}')  
             else: 
-                self.result = 'lose'
+                result = 'lose'
                 print(f'You lose! Computer:{computer_choice} : You {player_choice}')
-                self.score -=1
             self.game_running = False
-            print(self.score)
-        return self.result
+            
+        return result
 
     def gameLogic(self):
         self.computer_choice = self.getComputerChoice() 
         self.player_choice = self.getPlayerChoice()
         
+        result = self.gameRules(self.computer_choice, self.player_choice)
+
         if self.player_choice:
-            self.gameRules(self.computer_choice, self.player_choice)
+            if  result == 'win':
+                self.score +=1
+                self.score_sounds.scoreUpSound()
+            elif result == 'lose':
+                self.score -=1
+                self.score_sounds.scoreDownSound()
+            elif result == 'tie':
+                self.score = self.score
 
 
 

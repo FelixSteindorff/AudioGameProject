@@ -10,4 +10,4 @@ clock = pygame.time.Clock()
 while g.running:
     clock.tick(FPS)
     g.curr_menu.display_menu()
-    g.game_loop()   
+    g.game_loop()  
