@@ -17,11 +17,12 @@ class Soundloader():
 
     menuSounds = [forward, backward]
 
-
+    #play ScoreDown
     def scoreDownSound(self):
         score_Down_Ch = self.score_Down.play()
         return score_Down_Ch 
 
+    #play ScoreUp
     def scoreUpSound(self):
         score_Up_Ch = self.score_Up.play()
         return score_Up_Ch, 
